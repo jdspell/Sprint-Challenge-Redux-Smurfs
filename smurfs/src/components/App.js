@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import './App.css';
 import { connect } from 'react-redux';
-import { getSmurfs } from '../actions';
+import { getSmurfs, addSmurf } from '../actions';
 
 /*
  to wire this component up you're going to need a few things.
@@ -10,8 +10,37 @@ import { getSmurfs } from '../actions';
  `How do I ensure that my component links the state to props?`
  */
 class App extends Component {
+  state = {
+    smurf: {
+      name: "",
+      age: "",
+      height: ""
+    }
+  }
+
   componentDidMount() {
     this.props.getSmurfs();  
+  }
+
+  changeHandler = e => {
+    this.setState({
+      smurf: {
+        ...this.state.smurf,
+        [e.target.name]: e.target.value
+      }
+    });
+  }
+
+  addSmurf = e => {
+    e.preventDefault();
+    this.props.addSmurf(this.state.smurf);
+    this.setState({
+      smurf: {
+        name: "",
+        age: "",
+        height: ""
+      }
+    });
   }
 
   render() {
@@ -21,10 +50,35 @@ class App extends Component {
     
     return (
       <div className="App">
-        <h1>SMURFS! 2.0 W/ Redux</h1>
-        <div>Welcome to your Redux version of Smurfs!</div>
-        <div>Start inside of your `src/index.js` file!</div>
-        <div>Have fun!</div>
+        <h1>Smurfs</h1>
+
+        <form onSubmit={this.addSmurf}>
+          <input 
+            type="text"
+            placeholder="Enter a name."
+            name="name"
+            value={this.state.smurf.name}
+            onChange={this.changeHandler}
+          />
+
+          <input 
+            type="text"
+            placeholder="Enter an age."
+            name="age"
+            value={this.state.smurf.age}
+            onChange={this.changeHandler}
+          />
+
+          <input 
+            type="text"
+            placeholder="Enter a height."
+            name="height"
+            value={this.state.smurf.height}
+            onChange={this.changeHandler}
+          />
+          <button type="submit">Add Smurf</button>
+        </form>
+
         {this.props.smurfs.map(smurf => {
           return (
             <div className="smurf">
@@ -45,4 +99,4 @@ const mapStateToProps = state => {
   }
 }
 
-export default connect(mapStateToProps, { getSmurfs })(App);
+export default connect(mapStateToProps, { getSmurfs, addSmurf })(App);
